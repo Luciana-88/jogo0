@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Quiz Super Mario - Estilo Prova Paulista</title>
   <style>
     body {
@@ -36,6 +36,7 @@
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s;
+      user-select: none;
     }
 
     .resposta:hover {
@@ -44,21 +45,26 @@
 
     .acerto {
       background-color: #aaffaa !important;
+      cursor: default;
     }
 
     .erro {
       background-color: #ffaaaa !important;
+      cursor: default;
     }
 
     .mensagem {
       font-weight: bold;
       margin-top: 10px;
+      min-height: 24px;
+      color: #333;
     }
 
     #placar, #cronometro {
       font-size: 18px;
       font-weight: bold;
       margin-bottom: 15px;
+      color: #222;
     }
   </style>
 </head>
@@ -68,161 +74,165 @@
   <div id="quiz"></div>
 
   <script>
-    let jogadorAtual = 1;
-    let placares = { 1: 0, 2: 0 };
-    let tempo = 180;
-    let intervalo;
+    document.addEventListener('DOMContentLoaded', () => {
+      let jogadorAtual = 1;
+      let placares = { 1: 0, 2: 0 };
+      let tempo = 180;
+      let intervalo;
 
-    const frasesAcerto = [
-      "Parabéns! Avance 1 casa!",
-      "Boa! Avance 2 casas!",
-      "Excelente resposta! Continue jogando!"
-    ];
+      const frasesAcerto = [
+        "Parabéns! Avance 1 casa!",
+        "Boa! Avance 2 casas!",
+        "Excelente resposta! Continue jogando!"
+      ];
 
-    const frasesErro = [
-      "Ops! Você errou. Fique parado!",
-      "Não foi dessa vez. Passe a vez!",
-      "Resposta incorreta. Não avance!"
-    ];
+      const frasesErro = [
+        "Ops! Você errou. Fique parado!",
+        "Não foi dessa vez. Passe a vez!",
+        "Resposta incorreta. Não avance!"
+      ];
 
-    const perguntas = [
-       {
-    pergunta: "Maria criou um sistema de filtragem acessível e sustentável. Em qual fase da jornada empreendedora ela está?",
-    opcoes: [
-      "A) Você: fase de autoconhecimento e identificação de oportunidades.",
-      "B) Modelando: estruturação e validação do modelo.",
-      "C) Operando: projeto funcionando e gerando impacto.",
-      "D) Decolando: ajustes e primeiros contatos com o mercado."
-    ],
-    correta: 2
-  },
-  {
-    pergunta: "Janaína tem habilidades técnicas avançadas, gosta de inovação e quer explorar múltiplos campos sem perder a especialização. Qual o melhor plano de carreira para ela?",
-    opcoes: [
-      "A) Plano de carreira em linha.",
-      "B) Plano de carreira em Y.",
-      "C) Plano de carreira horizontal.",
-      "D) Plano de carreira em rede.",
-      "E) Plano de carreira em T."
-    ],
-    correta: 4
-  },
-  {
-    pergunta: "Os indicadores ESG (Environmental, Social and Governance) direcionam as empresas rumo à sustentabilidade. Eles estão organizados em três categorias: ambientais, sociais e de governança. Sua aplicação possibilita mensurar o desempenho sustentável e elaborar estratégias para
-melhorias contínuas. Segundo Romaro e Serralvo (2022), o ESG é um modelo de gestão que integra práticas responsáveis nessas três áreas, promovendo desenvolvimento sustentável e criação de valor a longo prazo.",
-    opcoes: [
-      "A) Implantação de políticas de combate ao favorecimento ilícito.",
-      "B) Criação de campanhas de doação de alimentos..",
-      "C) Incentivo ao aumento da diversidade no quadro de funcionários.",
-      "D) Redução do consumo de energia elétrica.",
-      "E) Desenvolvimento de projetos de reflorestamento."
-    ],
-    correta: 1
-  },
-  {
-    pergunta: "José está sendo ríspido e não entrega suas tarefas no trabalho. Quais deveres ele está descumprindo?",
-    opcoes: [
-      "A) Manter a pontualidade e preservar a confidencialidade das informações.",
-      "B) Seguir o código de ética e ter responsabilidade de ser produtivo.",
-      "C) Manter a pontualidade e seguir um código de ética adequado.",
-      "D) Apresentar produtividade e preservar a confidencialidade das informações.",
-      "E) Preservar a confidencialidade e comunicar faltas antecipadamente."
-    ],
-    correta: 1
-  },
-  {
-    pergunta: "Uma empresa enfrenta conflitos entre equipes e sintomas de cansaço entre os funcionários. Quais áreas da saúde ocupacional estão envolvidas?",
-    opcoes: [
-      "A) Física e intelectual.",
-      "B) Profissional e espiritual.",
-      "C) Emocional e social.",
-      "D) Intelectual e profissional.",
-      "E) Social, física e emocional."
-    ],
-    correta: 4
-  },
-      {
-        pergunta: "Qual prática demonstra conduta antiética no ambiente digital?",
-        opcoes: [
-          "A) Compartilhar conteúdo sem verificar a veracidade para aumentar as visualizações.",
-          "B) Criar estratégias para aumentar a visibilidade de um perfil com postagens frequentes.",
-          "C) Utilizar algoritmos para sugerir produtos personalizados aos consumidores.",
-          "D) Publicar conteúdos patrocinados de forma identificada.",
-          "E) Solicitar e-mails dos usuários para autenticação em um site."
-        ],
-        correta: 0
-      },
-      {
-        pergunta: "Qual alternativa representa corretamente um exemplo de indicador de governança segundo o conceito ESG?",
-        opcoes: [
-          "A) Implantação de políticas de combate ao favorecimento ilícito.",
-          "B) Criação de campanhas de doação de alimentos.",
-          "C) Incentivo à diversidade no quadro de funcionários.",
-          "D) Redução do consumo de energia elétrica.",
-          "E) Desenvolvimento de projetos de reflorestamento."
-        ],
-        correta: 0
+      const perguntas = [
+        {
+          pergunta: "Maria criou um sistema de filtragem acessível e sustentável. Em qual fase da jornada empreendedora ela está?",
+          opcoes: [
+            "A) Você: fase de autoconhecimento e identificação de oportunidades.",
+            "B) Modelando: estruturação e validação do modelo.",
+            "C) Operando: projeto funcionando e gerando impacto.",
+            "D) Decolando: ajustes e primeiros contatos com o mercado."
+          ],
+          correta: 2
+        },
+        {
+          pergunta: "Janaína tem habilidades técnicas avançadas, gosta de inovação e quer explorar múltiplos campos sem perder a especialização. Qual o melhor plano de carreira para ela?",
+          opcoes: [
+            "A) Plano de carreira em linha.",
+            "B) Plano de carreira em Y.",
+            "C) Plano de carreira horizontal.",
+            "D) Plano de carreira em rede.",
+            "E) Plano de carreira em T."
+          ],
+          correta: 4
+        },
+        {
+          pergunta: "Os indicadores ESG (Environmental, Social and Governance) direcionam as empresas rumo à sustentabilidade. Eles estão organizados em três categorias: ambientais, sociais e de governança. Sua aplicação possibilita mensurar o desempenho sustentável e elaborar estratégias para melhorias contínuas. Segundo Romaro e Serralvo (2022), o ESG é um modelo de gestão que integra práticas responsáveis nessas três áreas, promovendo desenvolvimento sustentável e criação de valor a longo prazo.",
+          opcoes: [
+            "A) Implantação de políticas de combate ao favorecimento ilícito.",
+            "B) Criação de campanhas de doação de alimentos.",
+            "C) Incentivo ao aumento da diversidade no quadro de funcionários.",
+            "D) Redução do consumo de energia elétrica.",
+            "E) Desenvolvimento de projetos de reflorestamento."
+          ],
+          correta: 1
+        },
+        {
+          pergunta: "José está sendo ríspido e não entrega suas tarefas no trabalho. Quais deveres ele está descumprindo?",
+          opcoes: [
+            "A) Manter a pontualidade e preservar a confidencialidade das informações.",
+            "B) Seguir o código de ética e ter responsabilidade de ser produtivo.",
+            "C) Manter a pontualidade e seguir um código de ética adequado.",
+            "D) Apresentar produtividade e preservar a confidencialidade das informações.",
+            "E) Preservar a confidencialidade e comunicar faltas antecipadamente."
+          ],
+          correta: 1
+        },
+        {
+          pergunta: "Uma empresa enfrenta conflitos entre equipes e sintomas de cansaço entre os funcionários. Quais áreas da saúde ocupacional estão envolvidas?",
+          opcoes: [
+            "A) Física e intelectual.",
+            "B) Profissional e espiritual.",
+            "C) Emocional e social.",
+            "D) Intelectual e profissional.",
+            "E) Social, física e emocional."
+          ],
+          correta: 4
+        },
+        {
+          pergunta: "Qual prática demonstra conduta antiética no ambiente digital?",
+          opcoes: [
+            "A) Compartilhar conteúdo sem verificar a veracidade para aumentar as visualizações.",
+            "B) Criar estratégias para aumentar a visibilidade de um perfil com postagens frequentes.",
+            "C) Utilizar algoritmos para sugerir produtos personalizados aos consumidores.",
+            "D) Publicar conteúdos patrocinados de forma identificada.",
+            "E) Solicitar e-mails dos usuários para autenticação em um site."
+          ],
+          correta: 0
+        },
+        {
+          pergunta: "Qual alternativa representa corretamente um exemplo de indicador de governança segundo o conceito ESG?",
+          opcoes: [
+            "A) Implantação de políticas de combate ao favorecimento ilícito.",
+            "B) Criação de campanhas de doação de alimentos.",
+            "C) Incentivo à diversidade no quadro de funcionários.",
+            "D) Redução do consumo de energia elétrica.",
+            "E) Desenvolvimento de projetos de reflorestamento."
+          ],
+          correta: 0
+        }
+      ];
+
+      const quiz = document.getElementById('quiz');
+      const placar = document.getElementById('placar');
+      const cronometro = document.getElementById('cronometro');
+
+      function atualizarPlacar() {
+        placar.innerText = `Jogador 1: ${placares[1]} | Jogador 2: ${placares[2]}`;
       }
-    ];
 
-    const quiz = document.getElementById('quiz');
-    const placar = document.getElementById('placar');
-    const cronometro = document.getElementById('cronometro');
-
-    function atualizarPlacar() {
-      placar.innerText = `Jogador 1: ${placares[1]} | Jogador 2: ${placares[2]}`;
-    }
-
-    function atualizarTempo() {
-      tempo--;
-      cronometro.innerText = `Tempo restante: ${Math.floor(tempo / 60)}m ${tempo % 60}s`;
-      if (tempo <= 0) {
-        clearInterval(intervalo);
-        cronometro.innerText = "Tempo esgotado!";
-        desabilitarRespostas();
+      function atualizarTempo() {
+        tempo--;
+        cronometro.innerText = `Tempo restante: ${Math.floor(tempo / 60)}m ${tempo % 60}s`;
+        if (tempo <= 0) {
+          clearInterval(intervalo);
+          cronometro.innerText = "Tempo esgotado!";
+          desabilitarRespostas();
+        }
       }
-    }
 
-    function desabilitarRespostas() {
-      document.querySelectorAll('.resposta').forEach(btn => btn.style.pointerEvents = 'none');
-    }
+      function desabilitarRespostas() {
+        document.querySelectorAll('.resposta').forEach(btn => btn.style.pointerEvents = 'none');
+      }
 
-    perguntas.forEach((q, index) => {
-      const bloco = document.createElement('div');
-      bloco.className = 'pergunta';
-      bloco.innerHTML = `<strong>${index + 1}. ${q.pergunta}</strong>`;
+      perguntas.forEach((q, index) => {
+        const bloco = document.createElement('div');
+        bloco.className = 'pergunta';
+        bloco.innerHTML = `<strong>${index + 1}. ${q.pergunta}</strong>`;
 
-      const msg = document.createElement('div');
-      msg.className = 'mensagem';
-      bloco.appendChild(msg);
+        const msg = document.createElement('div');
+        msg.className = 'mensagem';
+        bloco.appendChild(msg);
 
-      q.opcoes.forEach((op, i) => {
-        const botao = document.createElement('div');
-        botao.className = 'resposta';
-        botao.innerText = op;
-        botao.onclick = () => {
-          if (botao.classList.contains('acerto') || botao.classList.contains('erro')) return;
+        q.opcoes.forEach((op, i) => {
+          const botao = document.createElement('div');
+          botao.className = 'resposta';
+          botao.innerText = op;
+          botao.onclick = () => {
+            // evita clicar múltiplas vezes na mesma pergunta
+            if (botao.classList.contains('acerto') || botao.classList.contains('erro')) return;
 
-          if (i === q.correta) {
-            botao.classList.add('acerto');
-            placares[jogadorAtual]++;
-            msg.innerText = frasesAcerto[Math.floor(Math.random() * frasesAcerto.length)];
-          } else {
-            botao.classList.add('erro');
-            msg.innerText = frasesErro[Math.floor(Math.random() * frasesErro.length)];
-          }
+            if (i === q.correta) {
+              botao.classList.add('acerto');
+              placares[jogadorAtual]++;
+              msg.innerText = frasesAcerto[Math.floor(Math.random() * frasesAcerto.length)];
+            } else {
+              botao.classList.add('erro');
+              msg.innerText = frasesErro[Math.floor(Math.random() * frasesErro.length)];
+            }
 
-          atualizarPlacar();
-          jogadorAtual = jogadorAtual === 1 ? 2 : 1;
-        };
-        bloco.appendChild(botao);
+            atualizarPlacar();
+
+            // troca jogador
+            jogadorAtual = jogadorAtual === 1 ? 2 : 1;
+          };
+          bloco.appendChild(botao);
+        });
+
+        quiz.appendChild(bloco);
       });
 
-      quiz.appendChild(bloco);
+      intervalo = setInterval(atualizarTempo, 1000);
+      atualizarPlacar();
     });
-
-    intervalo = setInterval(atualizarTempo, 1000);
-    atualizarPlacar();
   </script>
 </body>
 </html>
